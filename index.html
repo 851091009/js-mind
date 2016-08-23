@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>思维导图</title>
+
+	<link rel="stylesheet" type="text/css" href="style/jsmind.css"/>
+	<script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+   	<script src="js/jsmind.js" type="text/javascript" charset="utf-8"></script>
+   	<script src="js/jsmind.draggable.js" type="text/javascript" charset="utf-8"></script>
+   	<script src="js/jquery.contextmenu.r2.js" type="text/javascript" charset="utf-8"></script>
+   	<script src="js/layer.js" type="text/javascript" charset="utf-8"></script>
+    <style type="text/css">
+        #jsmind_container{
+            width:100%;
+            height:100%;
+           
+            /*background:#f4f4f4;*/
+            background:#f4f4f4;
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            
+        }
+    </style>
+</head>
+<body>
+	<div id="jsmind_container"></div>
+	
+<div class="contextMenu" id="myMenu1">
+
+    <ul>
+
+      <li id="open" onclick="add_node();"><img src="folder.png" /> 添加</li>
+
+      <li id="email"><img src="email.png" /> Email</li>
+
+      <li id="save"><img src="disk.png" /> Save</li>
+
+      <li id="delete"><img src="cross.png" /> Delete</li>
+
+    </ul>
+
+  </div>
+  
+  <!--<!--<div id="myMenu1" class="econtextMenu" style="width:120px; z-index:99999">
+    <div data-options="iconCls:'icon-add'">
+        <span>新建</span>
+        <div style="width:150px;">
+            <div onClick="add_node()">私有标签</div>
+            <div data-options="disabled:true" onClick="">共有标签</div>
+        </div>
+    </div>
+    <div class="menu-sep"></div>
+    <div data-options="iconCls:'icon-edit'" onClick="modify_node()">编辑标签</div>
+    <div data-options="iconCls:'icon-remove',disabled:true">删除标签</div>
+    <div data-options="iconCls:'icon-large-shapes'" onClick="show_detail()">企业明细</div>
+</div>-->-->
+	<script type="text/javascript">
+    var _jm = null;
+    function load_jsmind(){
+        var mind = {
+            meta:{
+                name:'demo',
+                author:'hizzgdev@163.com',
+                version:'0.2'
+            },
+            format:'node_array',
+            data:[
+                {"id":"root", "isroot":true, "topic":"jsMind"},
+                {"id":"sub1", "parentid":"root", "topic":"sub1"},
+                {"id":"sub11", "parentid":"sub1", "topic":"sub11"},
+                {"id":"sub12", "parentid":"sub1", "topic":"sub12"},
+                {"id":"sub13", "parentid":"sub1", "topic":"sub13"},
+                {"id":"sub2", "parentid":"root", "topic":"sub2"},
+                {"id":"sub21", "parentid":"sub2", "topic":"sub21"},
+                {"id":"sub22", "parentid":"sub2", "topic":"sub22"},
+                {"id":"sub3", "parentid":"root", "topic":"sub3"},
+            ]
+        };
+        var options = {
+            container:'jsmind_container',
+            editable:true,
+            theme:'primary',
+            shortcut:{
+                handles:{
+                    test:function(j,e){
+                        console.log(j);
+                    }
+                },
+                mapping:{
+                    test:89
+                }
+            }
+        }
+        _jm = jsMind.show(options,mind);
+        // jm.set_readonly(true);
+        // var mind_data = jm.get_data();
+        // alert(mind_data);
+    }
+    
+    function load_file(fi){
+        var files = fi.files;
+        if(files.length > 0){
+            var file_data = files[0];
+            jsMind.util.file.read(file_data, function(freemind_data, jsmind_name){
+                var mind = jsmind_data;
+                if(!!mind){
+                    _jm.show(mind);
+                }else{
+                    console.error('can not open this file as mindmap');
+                }
+            });
+        }
+    }
+
+    function save_nodetree(){
+        var mind_data = _jm.get_data('node_tree');
+        console.log(mind_data);
+    }
+
+    function replay(){
+        var shell = _jm.shell;
+        if(!!shell){
+            shell.replay();
+        }
+    }
+	$(function(){
+		load_jsmind();
+		$('jmnode').contextMenu('myMenu1',{
+			
+		});
+	});
+	
+	function add_node(){
+		layer.prompt({
+		  title: '输入任何口令，并确认',
+		  formType: 2 //prompt风格，支持0-2
+		}, function(r){
+		    if (r){
+				var nodeid = jsMind.util.uuid.newid();
+				var topic = r+'（0）';
+				_jm.enable_edit();
+//				alert(_jm.get_selected_node().id); // 获取ID
+				//扩展方法， right 将子节点增加到右侧， left 将子节点增加到左侧，默认右侧
+				var node = _jm.add_node(_jm.get_selected_node(), nodeid, topic, null, "right");
+				_jm.disable_edit();
+			}
+		});	
+    }
+	   
+
+
+    </script>
+	
+
+</body>
+</html>
